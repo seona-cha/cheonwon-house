@@ -10,6 +10,8 @@ declare namespace naver.maps {
   class Map {
     constructor(element: string | HTMLElement, options?: MapOptions);
     getElement(): HTMLElement;
+    autoResize(): void;
+    destroy(): void;
   }
 
   type MapOptions = {
@@ -20,6 +22,7 @@ declare namespace naver.maps {
   class Marker {
     constructor(options: MarkerOptions);
     setIcon(icon: MarkerIcon): void;
+    setMap(map: Map | null): void;
   }
 
   type MarkerOptions = {

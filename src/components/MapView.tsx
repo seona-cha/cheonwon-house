@@ -67,6 +67,10 @@ export const MapView = ({
     });
     mapInstanceRef.current = map;
 
+    requestAnimationFrame(() => {
+      map.autoResize();
+    });
+
     apartments.forEach((apt) => {
       const aptId = getAptId(apt);
 
@@ -100,7 +104,11 @@ export const MapView = ({
 
     return () => {
       closeActiveInfoWindow();
+      Object.values(registryRef.current).forEach(({ marker }) => {
+        marker.setMap(null);
+      });
       registryRef.current = {};
+      mapInstanceRef.current?.destroy();
       mapInstanceRef.current = null;
     };
   }, [isScriptLoaded]);
