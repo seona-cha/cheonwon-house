@@ -1,0 +1,37 @@
+@use "../styles/variables" as *;
+@use "../styles/mixins" as *;
+
+.legend {
+  @include fixed-card($z-legend);
+  top: $space-5;
+  right: $space-5;
+  border-radius: $radius-md;
+  padding: $space-5 $space-6;
+  font-size: $font-size-xs;
+  line-height: 1.6;
+
+  h3 {
+    margin: 0 0 $space-3;
+    font-size: $font-size-sm;
+  }
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-1;
+}
+
+.legend-dot {
+  width: $legend-dot-size;
+  height: $legend-dot-size;
+  border-radius: $radius-full;
+  color: $color-white;
+  font-weight: bold;
+  font-size: $font-size-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}

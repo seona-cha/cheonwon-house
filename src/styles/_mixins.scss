@@ -1,0 +1,73 @@
+@use "variables" as *;
+
+@mixin focus-ring($color: $color-text, $offset: 2px) {
+  outline: 2px solid $color;
+  outline-offset: $offset;
+}
+
+@mixin close-button($size: $btn-close-md) {
+  width: $size;
+  height: $size;
+  border: none;
+  border-radius: $radius-sm;
+  background: $color-bg-muted;
+  color: $color-text;
+  font-size: $font-size-xl;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover,
+  &:focus {
+    background: $color-bg-muted-hover;
+    @include focus-ring($offset: 1px);
+  }
+}
+
+@mixin fixed-card($z-index) {
+  position: fixed;
+  z-index: $z-index;
+  background: $color-bg-page;
+  box-shadow: $shadow-card;
+}
+
+@mixin priority-button-base {
+  border: 2px solid transparent;
+  border-radius: $radius-full;
+  color: $color-white;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover,
+  &:focus {
+    @include focus-ring;
+  }
+
+  &.is-active {
+    border-color: $color-focus;
+    box-shadow:
+      0 0 0 2px $color-white,
+      0 0 0 4px $color-focus;
+  }
+}
+
+@mixin slide-panel-left {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: $z-panel;
+  width: $panel-width;
+  height: $map-height;
+  overflow-y: auto;
+  background: $color-bg-page;
+  box-shadow: $shadow-panel;
+  padding: $space-10 $space-8;
+  box-sizing: border-box;
+  transform: translateX(-100%);
+  transition: $transition-panel;
+
+  &.is-open {
+    transform: translateX(0);
+  }
+}

@@ -1,0 +1,6 @@
+@use "../styles/variables" as *;
+
+.map-view {
+  width: 100%;
+  height: $map-height;
+}

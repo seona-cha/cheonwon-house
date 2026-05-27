@@ -1,0 +1,24 @@
+@use "../styles/variables" as *;
+
+.auth-status {
+  position: fixed;
+  bottom: $space-5;
+  left: $space-5;
+  z-index: 100;
+  padding: $space-2 $space-4;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  background: rgb(255 255 255 / 92%);
+  border-radius: $radius-sm;
+  box-shadow: $shadow-card;
+}
+
+.auth-status--ok {
+  color: $color-success;
+}
+
+.auth-status--error {
+  color: $color-error;
+  max-width: 280px;
+  line-height: 1.4;
+}

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>천원주택 후보 지도</title>
+
+  <!-- <script
+    type="text/javascript"
+    src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=2kfpf070bo&submodules=geocoder"></script> -->
+    
+<!-- 레거시 HTML. React 앱(npm run dev) 사용 권장. 키는 .env의 VITE_NAVER_MAP_KEY 사용 -->
+<script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=YOUR_NAVER_MAP_KEY&submodules=geocoder"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+
+    #apt-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 200;
+      width: 280px;
+      height: 100vh;
+      overflow-y: auto;
+      background: #fff;
+      box-shadow: 2px 0 16px rgba(0, 0, 0, 0.12);
+      padding: 16px;
+      box-sizing: border-box;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+    }
+
+    #apt-panel.is-open {
+      transform: translateX(0);
+    }
+
+    #apt-panel .panel-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: #f0f0f0;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    #apt-panel .panel-hint {
+      margin: 0 0 12px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    #apt-panel .save-toast {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #2e7d32;
+      min-height: 18px;
+    }
+
+    #apt-panel .save-toast.is-error {
+      color: #c62828;
+    }
+
+    .info-window {
+      position: relative;
+      padding: 10px 36px 10px 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      min-width: 220px;
+    }
+
+    .info-window-close {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 4px;
+      background: #f0f0f0;
+      color: #333;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .info-window-close:hover,
+    .info-window-close:focus {
+      background: #e0e0e0;
+      outline: 2px solid #333;
+      outline-offset: 1px;
+    }
+
+    .title {
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .priority-section {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+
+    .priority-label {
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .priority-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .priority-btn {
+      width: 32px;
+      height: 32px;
+      border: 2px solid transparent;
+      border-radius: 50%;
+      color: #fff;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .priority-btn:hover,
+    .priority-btn:focus {
+      outline: 2px solid #333;
+      outline-offset: 2px;
+    }
+
+    .priority-btn.is-active {
+      border-color: #222;
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px #222;
+    }
+
+    .priority-clear {
+      margin-top: 8px;
+      padding: 4px 10px;
+      font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #f5f5f5;
+      cursor: pointer;
+    }
+
+    .priority-clear:hover,
+    .priority-clear:focus {
+      background: #e8e8e8;
+    }
+
+    #legend {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 100;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    #legend h3 {
+      margin: 0 0 8px;
+      font-size: 13px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .legend-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: #fff;
+      font-weight: bold;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<aside id="apt-panel" aria-label="아파트 상세 및 우선순위">
+  <button type="button" class="panel-close" aria-label="패널 닫기">×</button>
+  <p class="panel-hint">마커를 클릭한 뒤 아래에서 우선순위를 선택하세요.</p>
+  <div id="apt-panel-body">
+    <p>마커를 클릭해 주세요.</p>
+  </div>
+  <p id="save-toast" class="save-toast" aria-live="polite"></p>
+</aside>
+
+<aside id="legend" aria-label="우선순위 범례">
+  <h3>방문 우선순위</h3>
+  <div class="legend-item"><span class="legend-dot" style="background:#c62828">1</span> 1순위 (최우선)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#ef6c00">2</span> 2순위</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#f9a825">3</span> 3순위</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#1565c0">4</span> 4순위</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#6a1b9a">5</span> 5순위</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#757575">·</span> 미지정</div>
+</aside>
+
+<script>
+const apartments = [
+  {
+    name: "동방",
+    address: "인천 계양구 계산로126번길 34",
+    year: "1979"
+  },
+  {
+    name: "동서",
+    address: "인천 계양구 길마로 57",
+    year: "1981"
+  },
+  {
+    name: "성우",
+    address: "인천 계양구 봉오대로686번길 17",
+    year: "1982"
+  },
+  {
+    name: "서광",
+    address: "인천 계양구 아나지로197번길 24",
+    year: "1983"
+  },
+  {
+    name: "작전 동아",
+    address: "인천 계양구 작전시장로 3",
+    year: "1983"
+  },
+  {
+    name: "작전 신동양",
+    address: "인천 계양구 봉오대로686번길 8",
+    year: "1983"
+  },
+  {
+    name: "작전",
+    address: "인천 계양구 봉오대로743번길 17",
+    year: "1984"
+  },
+  {
+    name: "효성 동남",
+    address: "인천 계양구 안남로 590",
+    year: "1984"
+  },
+  {
+    name: "세경",
+    address: "인천 계양구 하느재로6번길 14",
+    year: "1984"
+  },
+  {
+    name: "제성",
+    address: "인천 계양구 하느재로20번길 19",
+    year: "1984"
+  },
+  {
+    name: "인우",
+    address: "인천 계양구 임학서로6번길 14",
+    year: "1984"
+  },
+  {
+    name: "작전 신한",
+    address: "인천 계양구 계양대로139번길 9",
+    year: "1984"
+  },
+  {
+    name: "공작",
+    address: "인천 계양구 주부토로413번길 17",
+    year: "1984"
+  },
+  {
+    name: "삼미",
+    address: "인천 계양구 주부토로459번길 5",
+    year: "1984"
+  },
+  {
+    name: "형제",
+    address: "인천 계양구 주부토로460번길 12",
+    year: "1985"
+  },
+  {
+    name: "백조",
+    address: "인천 계양구 주부토로449번길 7",
+    year: "1985"
+  },
+  {
+    name: "연희",
+    address: "인천 계양구 하느재로41번길 14",
+    year: "1985"
+  },
+  {
+    name: "동양",
+    address: "인천 계양구 봉오대로677번길 30",
+    year: "1985"
+  },
+  {
+    name: "유진",
+    address: "인천 계양구 봉오대로712번길 13",
+    year: "1985"
+  },
+  {
+    name: "계산 신동양",
+    address: "인천 계양구 계양산로 14",
+    year: "1985"
+  },
+  {
+    name: "경신",
+    address: "인천 계양구 아나지로307번길 24",
+    year: "1985"
+  },
+  {
+    name: "백합",
+    address: "인천 계양구 주부토로 466",
+    year: "1985"
+  },
+  {
+    name: "영흥",
+    address: "인천 계양구 주부토로459번길 8-6",
+    year: "1985"
+  },
+  {
+    name: "작전 동성",
+    address: "인천 계양구 봉오대로698번길 18",
+    year: "1985"
+  },
+  {
+    name: "임학 삼우",
+    address: "인천 계양구 임학안로27번길 14",
+    year: "1986"
+  },
+  {
+    name: "계산 신한",
+    address: "인천 계양구 경명대로1029번길 16",
+    year: "1986"
+  },
+  {
+    name: "계산 동성",
+    address: "인천 계양구 경명대로1029번길 6",
+    year: "1986"
+  },
+  {
+    name: "일신",
+    address: "인천 계양구 경명대로1045번길 8",
+    year: "1986"
+  },
+  {
+    name: "영동",
+    address: "인천 계양구 경명대로1045번길 11",
+    year: "1986"
+  },
+  {
+    name: "한오",
+    address: "인천 계양구 봉오대로691번길 7",
+    year: "1987"
+  },
+  {
+    name: "계산1동 동남",
+    address: "인천 계양구 향교로 23",
+    year: "1987"
+  },
+  {
+    name: "정광",
+    address: "인천 계양구 경명대로 993",
+    year: "1987"
+  },
+  {
+    name: "경신",
+    address: "인천 계양구 계양산로 17",
+    year: "1987"
+  },
+  {
+    name: "팬더",
+    address: "인천 계양구 계산로 50-1",
+    year: "1987"
+  },
+  {
+    name: "중원",
+    address: "인천 계양구 임학안로 25",
+    year: "1988"
+  },
+  {
+    name: "에덴",
+    address: "인천 계양구 경명대로1029번길 12",
+    year: "1988"
+  },
+  {
+    name: "은영(은영칠성)",
+    address: "인천 계양구 임학안로 30",
+    year: "1988"
+  },
+  {
+    name: "계산2동 동남",
+    address: "인천 계양구 경명대로1029번길 36",
+    year: "1989"
+  },
+  {
+    name: "임학 한일",
+    address: "인천 계양구 임학안로 29",
+    year: "1989"
+  },
+  {
+    name: "대신",
+    address: "인천 계양구 안남로 526",
+    year: "1989"
+  },
+  {
+    name: "윤성",
+    address: "인천 계양구 임학서로46번길 7",
+    year: "1989"
+  },
+  {
+    name: "금보",
+    address: "인천 계양구 주부토로472번길 53-1",
+    year: "1989"
+  },
+  {
+    name: "작전1 팬더",
+    address: "인천 계양구 주부토로448번길 2",
+    year: "1989"
+  },
+  {
+    name: "수정",
+    address: "인천 계양구 효서로 222",
+    year: "1989"
+  },
+  {
+    name: "삼환2차",
+    address: "인천 계양구 경명대로1045번길 21-12",
+    year: "1989"
+  },
+  {
+    name: "용정",
+    address: "인천 계양구 장제로883번길 6",
+    year: "1989"
+  },
+  {
+    name: "작전2 팬더",
+    address: "인천 계양구 봉오대로651번길 8",
+    year: "1990"
+  },
+  {
+    name: "풍산",
+    address: "인천 계양구 봉오대로531번길 5",
+    year: "1991"
+  },
+  {
+    name: "성지",
+    address: "인천 계양구 새벌로 87",
+    year: "1993"
+  },
+  {
+    name: "계산 뉴서울1차",
+    address: "인천 계양구 장제로755번길 6-10",
+    year: "1993"
+  },
+  {
+    name: "기산",
+    address: "인천 계양구 어사대로 39",
+    year: "1996"
+  },
+  {
+    name: "대산",
+    address: "인천 계양구 새벌로 120",
+    year: "2003"
+  },
+  {
+    name: "알토란",
+    address: "인천 계양구 봉오대로686번길 5",
+    year: "2003"
+  },
+  {
+    name: "지산그라띠아",
+    address: "인천 계양구 경명대로1045번길 9-9",
+    year: "2003"
+  },
+  {
+    name: "우암센스뷰",
+    address: "인천 계양구 계산로126번길 19",
+    year: "2003"
+  },
+  {
+    name: "작전 우남푸르미아",
+    address: "인천 계양구 봉오대로 671",
+    year: "2006"
+  },
+  {
+    name: "흥인아이젠",
+    address: "인천 계양구 주부토로472번길 17",
+    year: "2006"
+  },
+  {
+    name: "영무 예다음",
+    address: "인천 계양구 장제로946번길 1",
+    year: "2007"
+  },
+  {
+    name: "렉스타운",
+    address: "인천 계양구 주부토로472번길 43",
+    year: "2008"
+  },
+  {
+    name: "벽산블루밍",
+    address: "인천 계양구 황어로115번길 13",
+    year: "2009"
+  },
+  {
+    name: "작전 삼성홈타운",
+    address: "인천 계양구 효서로303번길 19",
+    year: "2013"
+  },
+  {
+    name: "상록파라브",
+    address: "인천 계양구 주부토로 442",
+    year: "2013"
+  },
+  {
+    name: "효성 삼성홈타운",
+    address: "인천 계양구 효서로 10",
+    year: "2014"
+  },
+  {
+    name: "조이너스",
+    address: "인천 계양구 주부토로 478-2",
+    year: "2016"
+  },
+  {
+    name: "휴인",
+    address: "인천 계양구 주부토로587번길 10",
+    year: "2016"
+  },
+  {
+    name: "메트하임",
+    address: "인천 계양구 안남로519번길 4",
+    year: "2019"
+  },
+  {
+    name: "서해그랑블 더 테라스",
+    address: "인천 계양구 안남로572번길 23",
+    year: "2023"
+  },
+  {
+    name: "계양 동도센트리움 골든베이",
+    address: "인천 계양구 봉오대로 552",
+    year: "2024"
+  }
+];
+
+  const PRIORITY_STORAGE_KEY = "cheonwon-apartment-priorities-v2";
+
+  const PRIORITY_COLORS = {
+    1: "#c62828",
+    2: "#ef6c00",
+    3: "#f9a825",
+    4: "#1565c0",
+    5: "#6a1b9a",
+    default: "#757575"
+  };
+
+  const getAptId = (apt) => apt.address;
+
+  const aptPanel = document.getElementById("apt-panel");
+  const aptPanelBody = document.getElementById("apt-panel-body");
+  const saveToast = document.getElementById("save-toast");
+  let currentAptId = null;
+  let saveToastTimer = null;
+
+  const loadPriorities = () => {
+    const sources = [
+      PRIORITY_STORAGE_KEY,
+      "cheonwon-apartment-priorities"
+    ];
+    const merged = {};
+
+    for (const key of sources) {
+      try {
+        const raw = localStorage.getItem(key) || sessionStorage.getItem(key);
+        if (!raw) continue;
+        Object.assign(merged, JSON.parse(raw));
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const migrated = {};
+
+    apartments.forEach((apt, index) => {
+      const aptId = getAptId(apt);
+      const legacyNameKey = `${apt.name}|${apt.address}`;
+      const indexKey = String(index);
+
+      if (merged[aptId] != null) {
+        migrated[aptId] = Number(merged[aptId]);
+      } else if (merged[legacyNameKey] != null) {
+        migrated[aptId] = Number(merged[legacyNameKey]);
+      } else if (merged[indexKey] != null) {
+        migrated[aptId] = Number(merged[indexKey]);
+      } else if (merged[index] != null) {
+        migrated[aptId] = Number(merged[index]);
+      }
+    });
+
+    return migrated;
+  };
+
+  const savePriorities = (priorities) => {
+    const json = JSON.stringify(priorities);
+
+    try {
+      localStorage.setItem(PRIORITY_STORAGE_KEY, json);
+      sessionStorage.setItem(PRIORITY_STORAGE_KEY, json);
+      return true;
+    } catch (err) {
+      console.warn("우선순위 저장 실패:", err);
+      try {
+        sessionStorage.setItem(PRIORITY_STORAGE_KEY, json);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  };
+
+  let priorities = loadPriorities();
+
+  const showSaveToast = (message, isError = false) => {
+    saveToast.textContent = message;
+    saveToast.classList.toggle("is-error", isError);
+
+    if (saveToastTimer) clearTimeout(saveToastTimer);
+    saveToastTimer = setTimeout(() => {
+      saveToast.textContent = "";
+      saveToast.classList.remove("is-error");
+    }, 2000);
+  };
+
+  const getMarkerIcon = (priority) => {
+    const hasPriority = priority >= 1 && priority <= 5;
+    const bg = hasPriority ? PRIORITY_COLORS[priority] : PRIORITY_COLORS.default;
+    const label = hasPriority ? String(priority) : "·";
+    const size = hasPriority ? 34 : 28;
+    const fontSize = hasPriority ? 16 : 14;
+
+    return {
+      content: `
+        <div style="
+          width:${size}px;
+          height:${size}px;
+          background:${bg};
+          border:2px solid #fff;
+          border-radius:50%;
+          color:#fff;
+          font-weight:bold;
+          font-size:${fontSize}px;
+          line-height:${size - 4}px;
+          text-align:center;
+          box-shadow:0 2px 6px rgba(0,0,0,0.35);
+          cursor:pointer;
+          font-family:sans-serif;
+        ">${label}</div>
+      `,
+      anchor: new naver.maps.Point(size / 2, size / 2)
+    };
+  };
+
+  let activeInfoEntry = null;
+  let suppressOutsideClose = false;
+
+  const buildInfoWindowContent = (apt, currentPriority) => {
+    const priorityText = currentPriority
+      ? `우선순위: <strong>${currentPriority}순위</strong>`
+      : "우선순위: 미지정";
+
+    return `
+      <div class="info-window">
+        <button
+          type="button"
+          class="info-window-close"
+          aria-label="팝업 닫기"
+          onclick="CheonwonMap.closeInfoWindow(); return false;"
+        >×</button>
+        <div class="title">${apt.name}</div>
+        <div>${apt.address}</div>
+        <div>준공년도: ${apt.year}</div>
+        <div style="margin-top:8px;font-size:12px;color:#555;">
+          ${priorityText}<br>
+          ← 왼쪽 패널에서 변경
+        </div>
+      </div>
+    `;
+  };
+
+  const closeAptPanel = () => {
+    aptPanel.classList.remove("is-open");
+    currentAptId = null;
+  };
+
+  const closeActiveInfoWindow = () => {
+    if (activeInfoEntry?.infoWindow?.getMap()) {
+      activeInfoEntry.infoWindow.close();
+    }
+    activeInfoEntry = null;
+  };
+
+  const closeAllOverlays = () => {
+    closeActiveInfoWindow();
+    closeAptPanel();
+  };
+
+  const isOverlayOpen = () =>
+    aptPanel.classList.contains("is-open") ||
+    !!activeInfoEntry?.infoWindow?.getMap();
+
+  const isClickInsideInfoWindow = (domEvent) => {
+    if (!domEvent || !activeInfoEntry) return false;
+
+    const contentEl =
+      typeof activeInfoEntry.infoWindow.getContentElement === "function"
+        ? activeInfoEntry.infoWindow.getContentElement()
+        : null;
+
+    if (!contentEl) return false;
+    return contentEl.contains(domEvent.target);
+  };
+
+  window.CheonwonMap = {
+    closeInfoWindow: closeAllOverlays
+  };
+
+  const renderAptPanel = (apt, aptId) => {
+    const currentPriority = priorities[aptId] ?? null;
+
+    const priorityButtons = [1, 2, 3, 4, 5]
+      .map((n) => {
+        const isActive = currentPriority === n ? " is-active" : "";
+        return `
+          <button
+            type="button"
+            class="priority-btn${isActive}"
+            data-priority="${n}"
+            data-apt-id="${encodeURIComponent(aptId)}"
+            style="background:${PRIORITY_COLORS[n]}"
+            aria-label="우선순위 ${n}"
+            aria-pressed="${currentPriority === n}"
+          >${n}</button>
+        `;
+      })
+      .join("");
+
+    const priorityText = currentPriority
+      ? `현재: <strong>${currentPriority}순위</strong>`
+      : "현재: 미지정";
+
+    aptPanelBody.innerHTML = `
+      <div class="title">${apt.name}</div>
+      <div style="margin:6px 0;">${apt.address}</div>
+      <div>준공년도: ${apt.year}</div>
+      <div class="priority-section">
+        <div class="priority-label">방문 우선순위</div>
+        <div class="priority-status">${priorityText}</div>
+        <div class="priority-buttons" role="group" aria-label="우선순위 선택">
+          ${priorityButtons}
+        </div>
+        <button type="button" class="priority-clear" data-apt-id="${encodeURIComponent(aptId)}">
+          우선순위 해제
+        </button>
+      </div>
+    `;
+
+    aptPanel.classList.add("is-open");
+  };
+
+  const openAptPanel = (apt, aptId) => {
+    currentAptId = aptId;
+    renderAptPanel(apt, aptId);
+  };
+
+  const markerRegistry = {};
+
+  const applyPriorityToMarker = (aptId, priority) => {
+    const entry = markerRegistry[aptId];
+    if (!entry) return;
+
+    const wasOpen = !!entry.infoWindow.getMap();
+
+    entry.marker.setIcon(getMarkerIcon(priority));
+    entry.infoWindow.setContent(
+      buildInfoWindowContent(entry.apt, priority)
+    );
+
+    if (wasOpen) {
+      entry.infoWindow.open(entry.map, entry.marker);
+    }
+  };
+
+  const setPriority = (aptId, priority) => {
+    if (!aptId) return;
+
+    if (priority === null || priority === undefined || Number.isNaN(priority)) {
+      delete priorities[aptId];
+    } else {
+      priorities[aptId] = priority;
+    }
+
+    const saved = savePriorities(priorities);
+    applyPriorityToMarker(aptId, priorities[aptId] ?? null);
+
+    if (currentAptId === aptId) {
+      const entry = markerRegistry[aptId];
+      if (entry) renderAptPanel(entry.apt, aptId);
+    }
+
+    if (saved) {
+      showSaveToast(
+        priority ? `${priority}순위로 저장됨` : "우선순위 해제됨"
+      );
+    } else {
+      showSaveToast("저장 공간을 사용할 수 없습니다.", true);
+    }
+  };
+
+  const map = new naver.maps.Map("map", {
+    center: new naver.maps.LatLng(37.537, 126.737),
+    zoom: 13
+  });
+
+  document.addEventListener("click", (e) => {
+    if (suppressOutsideClose) {
+      suppressOutsideClose = false;
+      return;
+    }
+
+    if (!isOverlayOpen()) return;
+    if (e.target.closest("#apt-panel")) return;
+
+    if (e.target.closest(".info-window-close")) {
+      closeAllOverlays();
+      return;
+    }
+
+    if (isClickInsideInfoWindow(e)) return;
+
+    closeAllOverlays();
+  });
+
+  aptPanel.addEventListener("click", (e) => {
+    const priorityBtn = e.target.closest(".priority-btn");
+    if (priorityBtn) {
+      const aptId = decodeURIComponent(priorityBtn.dataset.aptId);
+      setPriority(aptId, Number(priorityBtn.dataset.priority));
+      return;
+    }
+
+    const clearBtn = e.target.closest(".priority-clear");
+    if (clearBtn) {
+      setPriority(decodeURIComponent(clearBtn.dataset.aptId), null);
+      return;
+    }
+
+    if (e.target.closest(".panel-close")) {
+      closeAllOverlays();
+    }
+  });
+
+  apartments.forEach((apt) => {
+    const aptId = getAptId(apt);
+
+    naver.maps.Service.geocode(
+      { query: apt.address },
+      function (status, response) {
+        if (status !== naver.maps.Service.Status.OK) {
+          return;
+        }
+
+        const result = response.v2.addresses[0];
+        const position = new naver.maps.LatLng(result.y, result.x);
+        const savedPriority = priorities[aptId] ?? null;
+
+        const marker = new naver.maps.Marker({
+          map: map,
+          position: position,
+          title: apt.name,
+          icon: getMarkerIcon(savedPriority)
+        });
+
+        const infoWindow = new naver.maps.InfoWindow({
+          content: buildInfoWindowContent(apt, savedPriority)
+        });
+
+        markerRegistry[aptId] = {
+          marker,
+          infoWindow,
+          apt,
+          map
+        };
+
+        naver.maps.Event.addListener(marker, "click", function () {
+          suppressOutsideClose = true;
+          closeActiveInfoWindow();
+          openAptPanel(apt, aptId);
+          infoWindow.open(map, marker);
+          activeInfoEntry = markerRegistry[aptId];
+        });
+      }
+    );
+  });
+</script>
+
+</body>
+</html>

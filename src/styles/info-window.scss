@@ -1,0 +1,34 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// 네이버 지도 InfoWindow HTML (전역 클래스)
+.info-window {
+  position: relative;
+  padding: $space-4 36px $space-4 $space-4;
+  font-size: $font-size-sm;
+  line-height: 1.5;
+  min-width: 220px;
+
+  .title {
+    font-weight: bold;
+    margin-bottom: $space-2;
+    font-size: $font-size-lg;
+  }
+  
+  .panel-label {
+    color: $color-text-muted;
+    font-size: $font-size-sm;
+  }
+  
+  .priority {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+  }
+}
+
+.info-window-close {
+  position: absolute;
+  top: $space-2;
+  right: $space-2;
+  @include close-button($btn-close-sm);
+}

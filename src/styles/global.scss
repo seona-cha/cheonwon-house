@@ -1,0 +1,14 @@
+@use "variables" as *;
+
+body {
+  margin: 0;
+  font-family: $font-family-base;
+}
+
+.app-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: $map-height;
+  padding: $space-8;
+}

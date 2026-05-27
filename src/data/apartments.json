@@ -1,0 +1,410 @@
+[
+  {
+    "id": "dongbang",
+    "name": "동방",
+    "address": "인천 계양구 계산로126번길 34",
+    "year": "1979"
+  },
+  {
+    "id": "dongseo",
+    "name": "동서",
+    "address": "인천 계양구 길마로 57",
+    "year": "1981"
+  },
+  {
+    "id": "seongwoo",
+    "name": "성우",
+    "address": "인천 계양구 봉오대로686번길 17",
+    "year": "1982"
+  },
+  {
+    "id": "seogwang",
+    "name": "서광",
+    "address": "인천 계양구 아나지로197번길 24",
+    "year": "1983"
+  },
+  {
+    "id": "jakjeon-donga",
+    "name": "작전 동아",
+    "address": "인천 계양구 작전시장로 3",
+    "year": "1983"
+  },
+  {
+    "id": "jakjeon-shindongyang",
+    "name": "작전 신동양",
+    "address": "인천 계양구 봉오대로686번길 8",
+    "year": "1983"
+  },
+  {
+    "id": "jakjeon",
+    "name": "작전",
+    "address": "인천 계양구 봉오대로743번길 17",
+    "year": "1984"
+  },
+  {
+    "id": "hyoseong-dongnam",
+    "name": "효성 동남",
+    "address": "인천 계양구 안남로 590",
+    "year": "1984"
+  },
+  {
+    "id": "segyeong",
+    "name": "세경",
+    "address": "인천 계양구 하느재로6번길 14",
+    "year": "1984"
+  },
+  {
+    "id": "jeseong",
+    "name": "제성",
+    "address": "인천 계양구 하느재로20번길 19",
+    "year": "1984"
+  },
+  {
+    "id": "inwoo",
+    "name": "인우",
+    "address": "인천 계양구 임학서로6번길 14",
+    "year": "1984"
+  },
+  {
+    "id": "jakjeon-shinhan",
+    "name": "작전 신한",
+    "address": "인천 계양구 계양대로139번길 9",
+    "year": "1984"
+  },
+  {
+    "id": "gongjak",
+    "name": "공작",
+    "address": "인천 계양구 주부토로413번길 17",
+    "year": "1984"
+  },
+  {
+    "id": "sammi",
+    "name": "삼미",
+    "address": "인천 계양구 주부토로459번길 5",
+    "year": "1984"
+  },
+  {
+    "id": "hyeongje",
+    "name": "형제",
+    "address": "인천 계양구 주부토로460번길 12",
+    "year": "1985"
+  },
+  {
+    "id": "baekjo",
+    "name": "백조",
+    "address": "인천 계양구 주부토로449번길 7",
+    "year": "1985"
+  },
+  {
+    "id": "yeonhui",
+    "name": "연희",
+    "address": "인천 계양구 하느재로41번길 14",
+    "year": "1985"
+  },
+  {
+    "id": "dongyang",
+    "name": "동양",
+    "address": "인천 계양구 봉오대로677번길 30",
+    "year": "1985"
+  },
+  {
+    "id": "yujin",
+    "name": "유진",
+    "address": "인천 계양구 봉오대로712번길 13",
+    "year": "1985"
+  },
+  {
+    "id": "gesan-shindongyang",
+    "name": "계산 신동양",
+    "address": "인천 계양구 계양산로 14",
+    "year": "1985"
+  },
+  {
+    "id": "gyeongsin-anaji307",
+    "name": "경신",
+    "address": "인천 계양구 아나지로307번길 24",
+    "year": "1985"
+  },
+  {
+    "id": "baekhap",
+    "name": "백합",
+    "address": "인천 계양구 주부토로 466",
+    "year": "1985"
+  },
+  {
+    "id": "yeongheung",
+    "name": "영흥",
+    "address": "인천 계양구 주부토로459번길 8-6",
+    "year": "1985"
+  },
+  {
+    "id": "jakjeon-dongseong",
+    "name": "작전 동성",
+    "address": "인천 계양구 봉오대로698번길 18",
+    "year": "1985"
+  },
+  {
+    "id": "imhak-samwoo",
+    "name": "임학 삼우",
+    "address": "인천 계양구 임학안로27번길 14",
+    "year": "1986"
+  },
+  {
+    "id": "gesan-shinhan",
+    "name": "계산 신한",
+    "address": "인천 계양구 경명대로1029번길 16",
+    "year": "1986"
+  },
+  {
+    "id": "gesan-dongseong",
+    "name": "계산 동성",
+    "address": "인천 계양구 경명대로1029번길 6",
+    "year": "1986"
+  },
+  {
+    "id": "ilshin",
+    "name": "일신",
+    "address": "인천 계양구 경명대로1045번길 8",
+    "year": "1986"
+  },
+  {
+    "id": "yeongdong",
+    "name": "영동",
+    "address": "인천 계양구 경명대로1045번길 11",
+    "year": "1986"
+  },
+  {
+    "id": "hano",
+    "name": "한오",
+    "address": "인천 계양구 봉오대로691번길 7",
+    "year": "1987"
+  },
+  {
+    "id": "gesan1-dongnam",
+    "name": "계산1동 동남",
+    "address": "인천 계양구 향교로 23",
+    "year": "1987"
+  },
+  {
+    "id": "jeonggwang",
+    "name": "정광",
+    "address": "인천 계양구 경명대로 993",
+    "year": "1987"
+  },
+  {
+    "id": "gyeongsin-gyeyangsanno",
+    "name": "경신",
+    "address": "인천 계양구 계양산로 17",
+    "year": "1987"
+  },
+  {
+    "id": "paender-gyesanro",
+    "name": "팬더",
+    "address": "인천 계양구 계산로 50-1",
+    "year": "1987"
+  },
+  {
+    "id": "jungwon",
+    "name": "중원",
+    "address": "인천 계양구 임학안로 25",
+    "year": "1988"
+  },
+  {
+    "id": "eden",
+    "name": "에덴",
+    "address": "인천 계양구 경명대로1029번길 12",
+    "year": "1988"
+  },
+  {
+    "id": "eunyeong-chilsung",
+    "name": "은영(은영칠성)",
+    "address": "인천 계양구 임학안로 30",
+    "year": "1988"
+  },
+  {
+    "id": "gesan2-dongnam",
+    "name": "계산2동 동남",
+    "address": "인천 계양구 경명대로1029번길 36",
+    "year": "1989"
+  },
+  {
+    "id": "imhak-hanil",
+    "name": "임학 한일",
+    "address": "인천 계양구 임학안로 29",
+    "year": "1989"
+  },
+  {
+    "id": "daeshin",
+    "name": "대신",
+    "address": "인천 계양구 안남로 526",
+    "year": "1989"
+  },
+  {
+    "id": "yunseong",
+    "name": "윤성",
+    "address": "인천 계양구 임학서로46번길 7",
+    "year": "1989"
+  },
+  {
+    "id": "geumbo",
+    "name": "금보",
+    "address": "인천 계양구 주부토로472번길 53-1",
+    "year": "1989"
+  },
+  {
+    "id": "jakjeon1-paender",
+    "name": "작전1 팬더",
+    "address": "인천 계양구 주부토로448번길 2",
+    "year": "1989"
+  },
+  {
+    "id": "sujeong",
+    "name": "수정",
+    "address": "인천 계양구 효서로 222",
+    "year": "1989"
+  },
+  {
+    "id": "samhwan2",
+    "name": "삼환2차",
+    "address": "인천 계양구 경명대로1045번길 21-12",
+    "year": "1989"
+  },
+  {
+    "id": "yongjeong",
+    "name": "용정",
+    "address": "인천 계양구 장제로883번길 6",
+    "year": "1989"
+  },
+  {
+    "id": "jakjeon2-paender",
+    "name": "작전2 팬더",
+    "address": "인천 계양구 봉오대로651번길 8",
+    "year": "1990"
+  },
+  {
+    "id": "pungsan",
+    "name": "풍산",
+    "address": "인천 계양구 봉오대로531번길 5",
+    "year": "1991"
+  },
+  {
+    "id": "seongji",
+    "name": "성지",
+    "address": "인천 계양구 새벌로 87",
+    "year": "1993"
+  },
+  {
+    "id": "gesan-newseoul1",
+    "name": "계산 뉴서울1차",
+    "address": "인천 계양구 장제로755번길 6-10",
+    "year": "1993"
+  },
+  {
+    "id": "gisan",
+    "name": "기산",
+    "address": "인천 계양구 어사대로 39",
+    "year": "1996"
+  },
+  {
+    "id": "daesan",
+    "name": "대산",
+    "address": "인천 계양구 새벌로 120",
+    "year": "2003"
+  },
+  {
+    "id": "altoran",
+    "name": "알토란",
+    "address": "인천 계양구 봉오대로686번길 5",
+    "year": "2003"
+  },
+  {
+    "id": "jisan-gratia",
+    "name": "지산그라띠아",
+    "address": "인천 계양구 경명대로1045번길 9-9",
+    "year": "2003"
+  },
+  {
+    "id": "uam-senseview",
+    "name": "우암센스뷰",
+    "address": "인천 계양구 계산로126번길 19",
+    "year": "2003"
+  },
+  {
+    "id": "jakjeon-unam-purumia",
+    "name": "작전 우남푸르미아",
+    "address": "인천 계양구 봉오대로 671",
+    "year": "2006"
+  },
+  {
+    "id": "heungin-igen",
+    "name": "흥인아이젠",
+    "address": "인천 계양구 주부토로472번길 17",
+    "year": "2006"
+  },
+  {
+    "id": "yeongmu-yedaum",
+    "name": "영무 예다음",
+    "address": "인천 계양구 장제로946번길 1",
+    "year": "2007"
+  },
+  {
+    "id": "rex-town",
+    "name": "렉스타운",
+    "address": "인천 계양구 주부토로472번길 43",
+    "year": "2008"
+  },
+  {
+    "id": "byeoksan-blooming",
+    "name": "벽산블루밍",
+    "address": "인천 계양구 황어로115번길 13",
+    "year": "2009"
+  },
+  {
+    "id": "jakjeon-samsung-hometown",
+    "name": "작전 삼성홈타운",
+    "address": "인천 계양구 효서로303번길 19",
+    "year": "2013"
+  },
+  {
+    "id": "sangrok-parabeu",
+    "name": "상록파라브",
+    "address": "인천 계양구 주부토로 442",
+    "year": "2013"
+  },
+  {
+    "id": "hyoseong-samsung-hometown",
+    "name": "효성 삼성홈타운",
+    "address": "인천 계양구 효서로 10",
+    "year": "2014"
+  },
+  {
+    "id": "joyners",
+    "name": "조이너스",
+    "address": "인천 계양구 주부토로 478-2",
+    "year": "2016"
+  },
+  {
+    "id": "hyuin",
+    "name": "휴인",
+    "address": "인천 계양구 주부토로587번길 10",
+    "year": "2016"
+  },
+  {
+    "id": "metheim",
+    "name": "메트하임",
+    "address": "인천 계양구 안남로519번길 4",
+    "year": "2019"
+  },
+  {
+    "id": "seohae-grandbleu-terrace",
+    "name": "서해그랑블 더 테라스",
+    "address": "인천 계양구 안남로572번길 23",
+    "year": "2023"
+  },
+  {
+    "id": "gyeyang-dongdo-centrium-goldenbay",
+    "name": "계양 동도센트리움 골든베이",
+    "address": "인천 계양구 봉오대로 552",
+    "year": "2024"
+  }
+]
