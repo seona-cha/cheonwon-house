@@ -3,14 +3,9 @@ import "./AuthStatus.scss";
 type AuthStatusProps = {
   isLoading: boolean;
   error: string | null;
-  isNotesLoading: boolean;
 };
 
-export const AuthStatus = ({
-  isLoading,
-  error,
-  isNotesLoading,
-}: AuthStatusProps) => {
+export const AuthStatus = ({ isLoading, error }: AuthStatusProps) => {
   if (error) {
     return (
       <div className="auth-status auth-status--error" role="alert">
@@ -19,7 +14,7 @@ export const AuthStatus = ({
     );
   }
 
-  if (isLoading || isNotesLoading) {
+  if (isLoading) {
     return (
       <div className="auth-status" aria-live="polite">
         Firebase 연결 중…

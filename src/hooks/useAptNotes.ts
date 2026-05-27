@@ -13,13 +13,15 @@ import type { Priority, Priorities } from "../types/apartment";
 import { aptNotesToPriorities } from "../utils/aptNotes";
 import { loadPriorities } from "../utils/priorities";
 
+const NOTES_COLLECTION = "apartmentNotes";
 const MIGRATION_FLAG_KEY = "cheonwon-firebase-migrated";
 
 type Toast = { message: string; isError: boolean } | null;
 
-export const useAptNotes = (uid: string | undefined) => {
+export const useAptNotes = () => {
   const [aptNotes, setAptNotes] = useState<AptNotes>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<Toast>(null);
 
   const showToast = useCallback((message: string, isError = false) => {
@@ -27,7 +29,7 @@ export const useAptNotes = (uid: string | undefined) => {
     window.setTimeout(() => setToast(null), 2000);
   }, []);
 
-  const migrateLocalPriorities = useCallback(async (userId: string) => {
+  const migrateLocalPriorities = useCallback(async () => {
     if (localStorage.getItem(MIGRATION_FLAG_KEY)) return;
 
     const localPriorities = loadPriorities();
@@ -41,7 +43,7 @@ export const useAptNotes = (uid: string | undefined) => {
     const batch = writeBatch(db);
 
     for (const [aptId, priority] of entries) {
-      const ref = doc(db, "users", userId, "apartmentNotes", aptId);
+      const ref = doc(db, NOTES_COLLECTION, aptId);
       batch.set(
         ref,
         {
@@ -60,10 +62,8 @@ export const useAptNotes = (uid: string | undefined) => {
   }, [showToast]);
 
   useEffect(() => {
-    if (!uid) return;
-
     const db = getFirestoreDb();
-    const notesRef = collection(db, "users", uid, "apartmentNotes");
+    const notesRef = collection(db, NOTES_COLLECTION);
 
     let isFirstSnapshot = true;
 
@@ -91,6 +91,7 @@ export const useAptNotes = (uid: string | undefined) => {
         });
 
         setAptNotes(next);
+        setError(null);
 
         if (isFirstSnapshot) {
           isFirstSnapshot = false;
@@ -99,25 +100,24 @@ export const useAptNotes = (uid: string | undefined) => {
       },
       (err) => {
         console.error(err);
+        setError("Firebase 데이터를 불러오지 못했습니다.");
         showToast("Firebase 데이터를 불러오지 못했습니다.", true);
         setIsLoading(false);
       }
     );
 
-    migrateLocalPriorities(uid).catch((err) => {
+    migrateLocalPriorities().catch((err) => {
       console.error(err);
     });
 
     return unsubscribe;
-  }, [uid, migrateLocalPriorities, showToast]);
+  }, [migrateLocalPriorities, showToast]);
 
   const updateNote = useCallback(
     async (aptId: string, partial: Partial<AptNote>) => {
-      if (!uid) return false;
-
       try {
         const db = getFirestoreDb();
-        const ref = doc(db, "users", uid, "apartmentNotes", aptId);
+        const ref = doc(db, NOTES_COLLECTION, aptId);
 
         await setDoc(
           ref,
@@ -135,7 +135,7 @@ export const useAptNotes = (uid: string | undefined) => {
         return false;
       }
     },
-    [uid, showToast]
+    [showToast]
   );
 
   const setPriority = useCallback(
@@ -159,6 +159,7 @@ export const useAptNotes = (uid: string | undefined) => {
     aptNotes,
     priorities,
     isLoading,
+    error,
     toast,
     updateNote,
     setPriority,

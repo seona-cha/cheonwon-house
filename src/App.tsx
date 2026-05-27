@@ -2,11 +2,9 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import apartmentsData from "./data/apartments.json";
 import { AptPanel } from "./components/AptPanel";
 import { AuthStatus } from "./components/AuthStatus";
-import { FirebaseSetupGuide } from "./components/FirebaseSetupGuide";
 import { Legend } from "./components/Legend";
 import { MapView } from "./components/MapView";
 import { useAptNotes } from "./hooks/useAptNotes";
-import { useAuth } from "./hooks/useAuth";
 import { useNaverMapScript } from "./hooks/useNaverMapScript";
 import { isFirebaseConfigured } from "./lib/firebase";
 import type { AptNote } from "./types/aptNote";
@@ -21,17 +19,16 @@ const apartments = apartmentsData as Apartment[];
 
 const App = () => {
   const isScriptLoaded = useNaverMapScript();
-  const { user, isLoading: isAuthLoading, error: authError, retry: retryAuth } =
-    useAuth();
   const {
     aptNotes,
     priorities,
     isLoading: isNotesLoading,
+    error: notesError,
     toast,
     updateNote,
     setPriority,
     showToast,
-  } = useAptNotes(user?.uid);
+  } = useAptNotes();
 
   const [selectedAptId, setSelectedAptId] = useState<string | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -102,10 +99,6 @@ const App = () => {
     );
   }
 
-  if (authError && !isAuthLoading) {
-    return <FirebaseSetupGuide error={authError} onRetry={retryAuth} />;
-  }
-
   return (
     <>
       <MapView
@@ -129,11 +122,7 @@ const App = () => {
         onUpdateNote={handleUpdateNote}
       />
       <Legend />
-      <AuthStatus
-        isLoading={isAuthLoading}
-        error={authError}
-        isNotesLoading={isNotesLoading}
-      />
+      <AuthStatus isLoading={isNotesLoading} error={notesError} />
     </>
   );
 };
